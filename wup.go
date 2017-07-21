@@ -32,5 +32,9 @@ func main() {
 		"to upload, run: curl http://host:%s --data-binary @myfile\n",
 		port)
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
