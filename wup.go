@@ -5,31 +5,41 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
+	"strings"
 )
 
-var fname = "/tmp/wupfile"
+const defaultFile = "wupfile"
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	f, err := os.Create(fname)
-	if err != nil {
+	writeErr := func(msg interface{}) {
 		w.WriteHeader(500)
-		fmt.Fprintf(w, "ERR: %s\n", err)
+		fmt.Fprintf(w, "ERR %s\n", msg)
+	}
+
+	file := strings.TrimLeft(r.URL.Path, "/")
+	if file == "" {
+		file = defaultFile
+	}
+	file = path.Join(os.TempDir(), file)
+	f, err := os.Create(file)
+	if err != nil {
+		writeErr(err)
 		return
 	}
 	defer f.Close()
 	_, err = io.Copy(f, r.Body)
 	if err != nil {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "ERR: %s\n", err)
+		writeErr(err)
 		return
 	}
-	fmt.Fprintln(w, "OK")
+	fmt.Fprintf(w, "OK %s\n", file)
 }
 
 func main() {
 	port := os.Args[1]
 	fmt.Fprintf(os.Stderr,
-		"to upload, run: curl http://host:%s --data-binary @myfile\n",
+		"to upload, run: curl http://host:%s/dest --data-binary @src\n",
 		port)
 	http.HandleFunc("/", handler)
 	err := http.ListenAndServe(":"+port, nil)
