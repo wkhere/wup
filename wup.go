@@ -7,10 +7,9 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"strings"
 )
 
-const defaultFile = "wupfile"
+const defaultFile = "wup"
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	writeErr := func(msg interface{}) {
@@ -18,7 +17,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "ERR %s\n", msg)
 	}
 
-	file := strings.TrimLeft(r.URL.Path, "/")
+	_, file := path.Split(r.URL.Path)
 	if file == "" {
 		file = defaultFile
 	}
@@ -50,7 +49,7 @@ func main() {
 	}
 }
 
-const uploadInfo = `to upload, map your rev.proxy to localhost:%d,
-then run: curl http://host/dest --data-binary @src
+const uploadInfo = `to upload, map your revproxy /wup to localhost:%d,
+then run: curl http://host/wup/dest --data-binary @src
 and get your file from /tmp/dest
 `
