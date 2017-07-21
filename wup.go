@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -37,14 +38,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := os.Args[1]
-	fmt.Fprintf(os.Stderr,
-		"to upload, run: curl http://host:%s/dest --data-binary @src\n",
-		port)
+	port := flag.Int("port", 9000, "")
+	flag.Parse()
+
+	fmt.Fprintf(os.Stderr, uploadInfo, *port)
 	http.HandleFunc("/", handler)
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
+
+const uploadInfo = `to upload, map your rev.proxy to localhost:%d,
+then run: curl http://host/dest --data-binary @src
+and get your file from /tmp/dest
+`
