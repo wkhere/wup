@@ -51,5 +51,5 @@ func main() {
 
 const uploadInfo = `to upload, map your revproxy /wup to localhost:%d,
 then run: curl http://host/wup/dest --data-binary @src
-and get your file from /tmp/dest
+and find your data in /tmp/dest
 `
