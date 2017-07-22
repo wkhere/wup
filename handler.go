@@ -7,13 +7,18 @@ import (
 	"path"
 )
 
-const defaultDest = "wup"
+const (
+	defaultDest = "wup"
+	server      = "wup/MJ12"
+)
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	writeErr := func(msg interface{}) {
 		w.WriteHeader(500)
 		fmt.Fprintf(w, "ERR %s\n", msg)
 	}
+
+	w.Header().Set("Server", server)
 
 	_, dest := path.Split(r.URL.Path)
 	if dest == "" {
