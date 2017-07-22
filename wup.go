@@ -4,12 +4,30 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 )
 
-const defaultFile = "wup"
+const defaultDest = "wup"
+
+func copyTemp(prefix string, r io.Reader) (n int64,
+	path string, err error) {
+	tf, err := ioutil.TempFile(os.TempDir(), prefix)
+	if err != nil {
+		return
+	}
+	defer tf.Close()
+
+	path = tf.Name()
+
+	n, err = io.Copy(tf, r)
+	if err != nil {
+		return
+	}
+	return
+}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	writeErr := func(msg interface{}) {
@@ -17,23 +35,34 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "ERR %s\n", msg)
 	}
 
-	_, file := path.Split(r.URL.Path)
-	if file == "" {
-		file = defaultFile
+	_, dest := path.Split(r.URL.Path)
+	if dest == "" {
+		dest = defaultDest
 	}
-	file = path.Join(os.TempDir(), file)
-	f, err := os.Create(file)
+
+	n, tempPath, err := copyTemp(dest, r.Body)
 	if err != nil {
 		writeErr(err)
 		return
 	}
-	defer f.Close()
-	_, err = io.Copy(f, r.Body)
+	if n == 0 {
+		err = os.Remove(tempPath)
+		if err != nil {
+			fmt.Fprintf(os.Stderr,
+				"WARN: wup could not remove tempfile %s\n", tempPath)
+		}
+		fmt.Fprintf(w, "OK NOP\n")
+		return
+	}
+
+	destPath := path.Join(os.TempDir(), dest)
+	err = os.Rename(tempPath, destPath)
 	if err != nil {
 		writeErr(err)
 		return
 	}
-	fmt.Fprintf(w, "OK %s\n", file)
+
+	fmt.Fprintf(w, "OK %s\n", destPath)
 }
 
 func main() {
