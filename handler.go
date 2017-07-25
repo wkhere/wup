@@ -16,6 +16,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	writeErr := func(err error) {
 		http.Error(w, fmt.Sprint("ERR ", err), 500)
 	}
+	writeOK := func(msgs ...interface{}) {
+		fmt.Fprintln(w, msgs...)
+	}
 
 	w.Header().Set("Server", server)
 
@@ -35,7 +38,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(os.Stderr,
 				"WARN: wup could not remove temp file %s\n", tempPath)
 		}
-		fmt.Fprintf(w, "OK NOP\n")
+		writeOK("OK NOP")
 		return
 	}
 
@@ -46,5 +49,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "OK %s\n", destPath)
+	writeOK("OK", destPath)
 }
