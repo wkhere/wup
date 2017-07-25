@@ -33,7 +33,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		err = os.Remove(tempPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr,
-				"WARN: wup could not remove tempfile %s\n", tempPath)
+				"WARN: wup could not remove temp file %s\n", tempPath)
 		}
 		fmt.Fprintf(w, "OK NOP\n")
 		return
