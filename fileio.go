@@ -3,12 +3,11 @@ package main
 import (
 	"io"
 	"io/ioutil"
-	"os"
 )
 
 func uploadToTemp(prefix string, r io.Reader) (n int64,
 	path string, err error) {
-	tf, err := ioutil.TempFile(os.TempDir(), prefix)
+	tf, err := ioutil.TempFile(destDir, prefix)
 	if err != nil {
 		return
 	}

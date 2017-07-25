@@ -39,7 +39,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	destPath := path.Join(os.TempDir(), dest)
+	destPath := path.Join(destDir, dest)
 	err = os.Rename(tempPath, destPath)
 	if err != nil {
 		writeErr(fmt.Errorf("cannot move uploaded file to dest path: %s", err))
