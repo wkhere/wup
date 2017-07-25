@@ -14,8 +14,7 @@ const (
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	writeErr := func(msg interface{}) {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "ERR %s\n", msg)
+		http.Error(w, fmt.Sprintf("ERR %s", msg), 500)
 	}
 
 	w.Header().Set("Server", server)
