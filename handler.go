@@ -24,9 +24,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		dest = defaultDest
 	}
 
-	n, tempPath, err := copyTemp(dest, r.Body)
+	n, tempPath, err := uploadToTemp(dest, r.Body)
 	if err != nil {
-		writeErr(err)
+		writeErr(fmt.Errorf("cannot upload to temp file: %s", err))
 		return
 	}
 	if n == 0 {

@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func copyTemp(prefix string, r io.Reader) (n int64,
+func uploadToTemp(prefix string, r io.Reader) (n int64,
 	path string, err error) {
 	tf, err := ioutil.TempFile(os.TempDir(), prefix)
 	if err != nil {
