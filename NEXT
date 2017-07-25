@@ -1,3 +1,4 @@
 + ignore zero-length file
 - don't overwrite by default; special url or header for overwrite
 + use http.Error(w, e, 500)
+- upload to dir given by envvar or /tmp if not given
