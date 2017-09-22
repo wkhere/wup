@@ -26,6 +26,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if dest == "" {
 		dest = defaultDest
 	}
+	destPath := path.Join(destDir, dest)
+	if _, err := os.Stat(destPath); !os.IsNotExist(err) {
+		writeErr(fmt.Errorf("cannot overwrite existing file: %s", destPath))
+		return
+	}
 
 	n, tempPath, err := uploadToTemp(dest, r.Body)
 	if err != nil {
@@ -42,7 +47,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	destPath := path.Join(destDir, dest)
 	err = os.Rename(tempPath, destPath)
 	if err != nil {
 		writeErr(fmt.Errorf("cannot move uploaded file to dest path: %s", err))
