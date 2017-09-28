@@ -11,10 +11,13 @@ func uploadToTemp(prefix string, r io.Reader) (n int64,
 	if err != nil {
 		return
 	}
-	defer tf.Close()
 
 	path = tf.Name()
 
 	n, err = io.Copy(tf, r)
+
+	if err2 := tf.Close(); err == nil {
+		err = err2
+	}
 	return
 }
