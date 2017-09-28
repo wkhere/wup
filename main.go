@@ -11,7 +11,7 @@ func main() {
 	port := flag.Int("port", 9000, "")
 	flag.Parse()
 
-	fmt.Fprintf(os.Stderr, uploadInfo, *port, destDir)
+	fmt.Fprintf(os.Stderr, uploadInfo(*port))
 
 	http.HandleFunc("/", handler)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
@@ -21,7 +21,14 @@ func main() {
 	}
 }
 
-const uploadInfo = `to upload, map your revproxy /wup to localhost:%d,
-then run: curl http://host/wup/dest --data-binary @src
-and find your data in %s/dest
-`
+func uploadInfo(port int) string {
+	return fmt.Sprintf(`
+to upload, run:  curl --data-binary @src http://localhost:%d/dest
+            or:  httpstat -d @src http://localhost:%d/dest
+or map your revproxy /wup to localhost:%d and use http://host/wup/dest
+then find your data in %s/dest
+
+`,
+		port, port, port, destDir,
+	)
+}
