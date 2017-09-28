@@ -13,13 +13,6 @@ const (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	writeErr := func(err error) {
-		http.Error(w, fmt.Sprint("ERR ", err), 500)
-	}
-	writeOK := func(msgs ...interface{}) {
-		fmt.Fprintln(w, msgs...)
-	}
-
 	w.Header().Set("Server", server)
 
 	_, dest := path.Split(r.URL.Path)
@@ -28,30 +21,35 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	destPath := path.Join(destDir, dest)
 	if _, err := os.Stat(destPath); !os.IsNotExist(err) {
-		writeErr(fmt.Errorf("cannot overwrite existing file: %s", destPath))
+		http.Error(w,
+			fmt.Sprint("FORBIDDEN cant overwrite existing file: ", destPath),
+			403)
 		return
 	}
 
 	n, tempPath, err := uploadToTemp(dest, r.Body)
 	if err != nil {
-		writeErr(fmt.Errorf("cannot upload to temp file: %s", err))
+		http.Error(w, fmt.Sprint("ERR cant upload to temp file: ", err), 500)
 		return
 	}
 	if n == 0 {
 		err = os.Remove(tempPath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr,
-				"WARN: wup could not remove temp file %s\n", tempPath)
+			fmt.Fprintln(os.Stderr,
+				"WARN: wup cant not remove zero-lenght temp file:", tempPath)
 		}
-		writeOK("OK NOP")
+		http.Error(w, "BAD zero-length input", 400)
 		return
 	}
 
 	err = os.Rename(tempPath, destPath)
 	if err != nil {
-		writeErr(fmt.Errorf("cannot move uploaded file to dest path: %s", err))
+		http.Error(w,
+			fmt.Sprint("ERR cant move uploaded file to dest path: ", err),
+			500)
 		return
 	}
 
-	writeOK("OK", destPath)
+	w.WriteHeader(201)
+	fmt.Fprintln(w, "CREATED", destPath)
 }
