@@ -16,8 +16,5 @@ func uploadToTemp(prefix string, r io.Reader) (n int64,
 	path = tf.Name()
 
 	n, err = io.Copy(tf, r)
-	if err != nil {
-		return
-	}
 	return
 }
