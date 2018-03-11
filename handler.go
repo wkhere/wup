@@ -36,7 +36,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		err = os.Remove(tempPath)
 		if err != nil {
 			fmt.Fprintln(os.Stderr,
-				"WARN: wup cant not remove zero-lenght temp file:", tempPath)
+				"WARN: wup cant remove zero-lenght temp file:", tempPath)
 		}
 		http.Error(w, "BAD zero-length input", 400)
 		return
