@@ -10,6 +10,7 @@ import (
 const (
 	defaultDest = "wup"
 	server      = "wup/CLR"
+	overwriteHd = "X-Overwrite"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -20,11 +21,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		dest = defaultDest
 	}
 	destPath := path.Join(destDir, dest)
-	if _, err := os.Stat(destPath); !os.IsNotExist(err) {
-		http.Error(w,
-			fmt.Sprint("FORBIDDEN cant overwrite existing file: ", destPath),
-			403)
-		return
+	if r.Header.Get(overwriteHd) != "yes" {
+		if _, err := os.Stat(destPath); !os.IsNotExist(err) {
+			http.Error(w,
+				fmt.Sprint("FORBIDDEN cant overwrite existing file: ", destPath),
+				403)
+			return
+		}
 	}
 
 	n, tempPath, err := uploadToTemp(dest, r.Body)
