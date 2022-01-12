@@ -25,10 +25,12 @@ func uploadInfo(port int) string {
 	return fmt.Sprintf(`
 to upload, run:  curl --data-binary @src http://localhost:%d/dest
             or:  httpstat -d @src http://localhost:%d/dest
-or map your revproxy /wup to localhost:%d and use http://host/wup/dest
+or ssh -R $remoteport:localhost:%d $host,
+    then on $host: curl .... http://localhost:$remoteport/dest
+or map your revproxy /wup to localhost:%d and use http://$host/wup/dest
 then find your data in %s/dest
 
 `,
-		port, port, port, destDir,
+		port, port, port, port, destDir,
 	)
 }
