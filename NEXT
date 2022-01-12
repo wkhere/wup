@@ -5,3 +5,4 @@
 + upload to dir given by DESTDIR envvar; fallback to systems temp
 - fixme: for /multi/chunk/path only the last part is taken
 - -HUP-proof
+- logs
