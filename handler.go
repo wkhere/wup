@@ -31,18 +31,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	n, tempPath, err := uploadToTemp(dest, r.Body)
-	if err != nil {
-		http.Error(w, fmt.Sprint("ERR cant upload to temp file: ", err), 500)
+	if r.Body == http.NoBody || r.Body == nil {
+		http.Error(w, "BAD zero-length input", 400)
 		return
 	}
-	if n == 0 {
-		err = os.Remove(tempPath)
-		if err != nil {
-			fmt.Fprintln(os.Stderr,
-				"WARN: wup cant remove zero-lenght temp file:", tempPath)
-		}
-		http.Error(w, "BAD zero-length input", 400)
+
+	_, tempPath, err := uploadToTemp(dest, r.Body)
+	if err != nil {
+		http.Error(w, fmt.Sprint("ERR cant upload to temp file: ", err), 500)
 		return
 	}
 
