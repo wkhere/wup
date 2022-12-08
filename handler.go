@@ -24,32 +24,36 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	destPath := filepath.Join(destDir, dest)
 	if r.Header.Get(overwriteHd) != "yes" {
 		if _, err := os.Stat(destPath); !os.IsNotExist(err) {
-			http.Error(w,
-				fmt.Sprint("FORBIDDEN cant overwrite existing file: ", destPath),
-				403)
+			respError(w, 403, "FORBIDDEN cant overwrite file: ", destPath)
 			return
 		}
 	}
 
 	if r.Body == http.NoBody || r.Body == nil {
-		http.Error(w, "BAD zero-length input", 400)
+		respError(w, 400, "BAD zero-length input")
 		return
 	}
 
 	_, tempPath, err := uploadToTemp(dest, r.Body)
 	if err != nil {
-		http.Error(w, fmt.Sprint("ERR cant upload to temp file: ", err), 500)
+		respError(w, 500, "ERR cant upload to temp file: ", err)
 		return
 	}
 
 	err = os.Rename(tempPath, destPath)
 	if err != nil {
-		http.Error(w,
-			fmt.Sprint("ERR cant move uploaded file to dest path: ", err),
-			500)
+		respError(w, 500, "ERR cant move uploaded file to dest path: ", err)
 		return
 	}
 
 	w.WriteHeader(201)
 	fmt.Fprintln(w, "CREATED", destPath)
+}
+
+func respError(w http.ResponseWriter, code int, a ...interface{}) {
+	http.Error(w, fmt.Sprint(a...), code)
+}
+
+func respErrorf(w http.ResponseWriter, code int, f string, a ...interface{}) {
+	http.Error(w, fmt.Sprintf(f, a...), code)
 }
