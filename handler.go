@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 const (
@@ -20,7 +21,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if dest == "" {
 		dest = defaultDest
 	}
-	destPath := path.Join(destDir, dest)
+	destPath := filepath.Join(destDir, dest)
 	if r.Header.Get(overwriteHd) != "yes" {
 		if _, err := os.Stat(destPath); !os.IsNotExist(err) {
 			http.Error(w,
