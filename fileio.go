@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 )
 
-func uploadToTemp(prefix string, r io.Reader) (n int64,
-	path string, err error) {
+func uploadToTemp(prefix string, r io.Reader) (n int64, path string,
+	err error) {
 	tf, err := ioutil.TempFile(destDir, prefix)
 	if err != nil {
 		return
