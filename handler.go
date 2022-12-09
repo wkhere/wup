@@ -32,7 +32,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if r.Body == http.NoBody || r.Body == nil {
+	if r.Body == http.NoBody {
 		respError(w, 400, "BAD zero-length input")
 		return
 	}
