@@ -1,5 +1,7 @@
 go:
-	go fmt
+	go vet
+
+install: go
 	go install
 
-.PHONY: go
+.PHONY: go install
