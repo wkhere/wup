@@ -22,8 +22,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		dest = defaultDest
 	}
 	destPath := filepath.Join(destDir, dest)
-	if r.Header.Get(overwriteHd) != "yes" {
-		if _, err := os.Stat(destPath); !os.IsNotExist(err) {
+
+	if _, err := os.Stat(destPath); !os.IsNotExist(err) {
+		if r.Header.Get(overwriteHd) == "yes" {
+			w.Header().Set(overwriteHd, "needed")
+		} else {
 			respError(w, 403, "FORBIDDEN cant overwrite file: ", destPath)
 			return
 		}
