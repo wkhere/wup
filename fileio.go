@@ -19,7 +19,7 @@ func uploadToTemp(prefix string, r io.Reader) (n int64, path string,
 
 	n, err = io.Copy(tf, limitR)
 	if limitR.more() {
-		io.Copy(io.Discard, r)
+		io.Copy(ioutil.Discard, r)
 		return n, path, errOverLimit
 	}
 
