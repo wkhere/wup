@@ -3,11 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
 
 func main() {
+	log.SetPrefix("wup: ")
+	log.SetFlags(0)
+
 	port := flag.Int("port", 9000, "")
 	flag.Parse()
 
