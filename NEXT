@@ -7,3 +7,4 @@
 - -HUP-proof
 - logs
 - configurable size limit
+- fix text responses (size or length?)
